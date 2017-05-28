@@ -2,8 +2,8 @@ language: go
 go:
   - 1.8.1
 install:
-  make glide
-  make deps
+  - make glide
+  - make deps
 
 script:
   - go vet
