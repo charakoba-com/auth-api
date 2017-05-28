@@ -1,7 +1,7 @@
 .PHONY: glide deps
 
 glide:
-	mkdir $GOPATH/bin
+	mkdir ${GOPATH}/bin
 	curl https://glide.sh/get | sh
 
 deps:
