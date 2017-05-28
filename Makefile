@@ -1,8 +1,8 @@
 .PHONY: glide deps
 
 glide:
-	go get -v github.com/Masterminds/glide
-	cd $GOPATH/src/github.com/Masterminds/glide && go install && cd -
+	mkdir $GOPATH/bin
+	curl https://glide.sh/get | sh
 
 deps:
 	glide install
