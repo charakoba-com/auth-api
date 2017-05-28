@@ -3,12 +3,8 @@ language: go
 go:
   - 1.8.1
 
-addons:
-  apt:
-    packages:
-      - glide
-
 install:
+  - make glide
   - make deps
 
 script:
