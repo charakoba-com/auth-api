@@ -5,9 +5,13 @@ go:
   - 1.8.x
   - master
 
+services:
+  - mysql
+
 install:
   - make glide
   - make deps
+  - make initdb
 
 script:
   - go vet
