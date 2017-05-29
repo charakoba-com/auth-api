@@ -22,3 +22,25 @@ func TestCreateUser(t *testing.T) {
 		return
 	}
 }
+
+func TestLookupUser(t *testing.T) {
+	u := db.User{}
+	tx, err := db.BeginTx()
+	if err != nil {
+		t.Errorf("%s", err)
+		return
+	}
+	err = u.Lookup(tx, "testuser")
+	if err != nil {
+		t.Errorf("%s", err)
+		return
+	}
+	if u.Name != "testuser" {
+		t.Errorf("%s != testuser", u.Name)
+		return
+	}
+	if u.Password != "testpasswd" {
+		t.Errorf("%s != testpasswd", u.Password)
+		return
+	}
+}
