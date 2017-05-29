@@ -7,12 +7,12 @@ import (
 	"github.com/pkg/errors"
 )
 
+const driverName = `mysql`
+
 var _db *sql.DB // global database connection
 
 // Init database connection
 func Init(c *mysql.Config) (err error) {
-	dn := "mysql"
-
 	if c == nil {
 		c = &mysql.Config{
 			User:      "root",
@@ -25,7 +25,7 @@ func Init(c *mysql.Config) (err error) {
 
 	dsn := c.FormatDSN()
 
-	_db, err = sql.Open(dn, dsn)
+	_db, err = sql.Open(driverName, dsn)
 	if err != nil {
 		return err
 	}
