@@ -2,7 +2,7 @@
 DROP TABLE IF EXISTS users;
 
 --- Create new tables
-CREATE TABLE IF NOT EXISTS users (
+CREATE TABLE users (
         username VARCHAR(256) NOT NULL,
         password VARCHAR(1024) NOT NULL,
         created_on DATETIME NOT NULL,
