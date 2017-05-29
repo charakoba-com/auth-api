@@ -49,6 +49,21 @@ func (u *User) Lookup(tx *sql.Tx, username string) error {
 	if err := u.Scan(row); err != nil {
 		return errors.Wrap(err, `scanning user record`)
 	}
+	u.key = u.Name
 
+	return nil
+}
+
+// Update user data
+func (u *User) Update(tx *sql.Tx) error {
+	stmt := bytes.Buffer{}
+	stmt.WriteString(`UPDATE `)
+	stmt.WriteString(UserTable)
+	stmt.WriteString(` SET username = ?, password = ? WHERE username = ?`)
+	_, err := tx.Exec(stmt.String(), u.Name, u.Password, u.key)
+	if err != nil {
+		return errors.Wrap(err, `updating user record`)
+	}
+	u.key = u.Name
 	return nil
 }

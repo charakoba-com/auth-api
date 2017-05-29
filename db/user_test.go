@@ -44,3 +44,37 @@ func TestLookupUser(t *testing.T) {
 		return
 	}
 }
+
+func TestUpdateUser(t *testing.T) {
+	u := db.User{}
+	tx, err := db.BeginTx()
+	if err != nil {
+		t.Errorf("%s", err)
+		return
+	}
+	err = u.Lookup(tx, "updateuser")
+	if err != nil {
+		t.Errorf("%s", err)
+		return
+	}
+
+	names := []string{"jiro", "saburo"}
+	for _, name := range names {
+		u.Name = name
+		err = u.Update(tx)
+		if err != nil {
+			t.Errorf("%s", err)
+			return
+		}
+		u = db.User{}
+		err = u.Lookup(tx, name)
+		if err != nil {
+			t.Errorf("%s", err)
+			return
+		}
+		if u.Name != name {
+			t.Errorf("%s != %s", u.Name, name)
+			return
+		}
+	}
+}
