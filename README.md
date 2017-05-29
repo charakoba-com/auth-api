@@ -1,4 +1,5 @@
 # Auth API
+[![Build Status](https://travis-ci.org/charakoba-com/auth-api.svg?branch=master)](https://travis-ci.org/charakoba-com/auth-api)
 ---
 
 Authentication API Server for charakoba.com
