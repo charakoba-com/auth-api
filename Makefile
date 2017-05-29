@@ -5,6 +5,9 @@ glide:
 	curl https://glide.sh/get | sh
 
 deps:
+	@echo "OS=${$(echo `uname` | tr'[:upper:]' '[:lower:}')}"
+	@echo type "curl"
+	@echo type "wget"
 	glide install
 
 initdb:
