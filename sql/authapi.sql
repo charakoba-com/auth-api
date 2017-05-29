@@ -1,7 +1,7 @@
---- Drop existing tables
+-- Drop existing tables
 DROP TABLE IF EXISTS users;
 
---- Create new tables
+-- Create new tables
 CREATE TABLE users (
         username VARCHAR(256) NOT NULL,
         password VARCHAR(1024) NOT NULL,
