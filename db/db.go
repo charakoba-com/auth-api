@@ -27,7 +27,7 @@ func Init(c *mysql.Config) (err error) {
 
 	_db, err = sql.Open(driverName, dsn)
 	if err != nil {
-		return err
+		return errors.Wrap(err, `connecting database`)
 	}
 	return nil
 }
