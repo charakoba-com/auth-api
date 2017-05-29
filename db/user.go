@@ -10,6 +10,7 @@ import (
 
 // UserTable name
 const UserTable = `users`
+
 // UserSelectColumns is a list of select columns
 const UserSelectColumns = `username, password, created_on, modified_on`
 
@@ -65,5 +66,23 @@ func (u *User) Update(tx *sql.Tx) error {
 		return errors.Wrap(err, `updating user record`)
 	}
 	u.key = u.Name
+	return nil
+}
+
+// Delete user data
+func (u *User) Delete(tx *sql.Tx) error {
+	stmt := bytes.Buffer{}
+	stmt.WriteString(`DELETE FROM `)
+	stmt.WriteString(UserTable)
+	stmt.WriteString(` WHERE username=?`)
+	_, err := tx.Exec(stmt.String(), u.Name)
+	if err != nil {
+		return errors.Wrap(err, `deleting user record`)
+	}
+	u.key = ""
+	u.Name = ""
+	u.Password = ""
+	u.CreatedOn = time.Time{}
+	u.ModifiedOn = time.Time{}
 	return nil
 }

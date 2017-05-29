@@ -78,3 +78,28 @@ func TestUpdateUser(t *testing.T) {
 		}
 	}
 }
+
+func TestDeleteUser(t *testing.T) {
+	u := db.User{}
+	tx, err := db.BeginTx()
+	if err != nil {
+		t.Errorf("%s", err)
+		return
+	}
+	err = u.Lookup(tx, "deleteuser")
+	if err != nil {
+		t.Errorf("%s", err)
+		return
+	}
+
+	err = u.Delete(tx)
+	if err != nil {
+		t.Errorf("%s", err)
+		return
+	}
+	err = u.Lookup(tx, "deleteuser")
+	if err == nil {
+		t.Errorf("%s should not be", u.Name)
+		return
+	}
+}
