@@ -15,6 +15,7 @@ install:
 
 script:
   - go vet
+  - go test
 
 notifications:
   email: false
