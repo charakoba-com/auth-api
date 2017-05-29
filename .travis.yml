@@ -15,7 +15,7 @@ install:
 
 script:
   - go vet -n -x
-  - go test -v
+  - go test -v $(glide nv)
 
 notifications:
   email: false
