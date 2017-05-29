@@ -11,4 +11,4 @@ initdb:
 	@echo "initializing database..."
 	@mysql -u root -e "DROP DATABASE IF EXISTS apidb;"
 	@mysql -u root -e "CREATE DATABASE apidb;"
-	@mysql -u root authapi < sql/authapi.sql
+	@mysql -u root apidb < sql/authapi.sql
