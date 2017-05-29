@@ -1,10 +1,11 @@
 .PHONY: glide deps initdb inittest
 
 glide:
-	os=$(echo `uname` | tr '[:upper:]' '[:lower:]')
-	@echo "OS=${os}"
-	@echo type "curl"
-	@echo type "wget"
+	echo `uname`
+	os=$(echo `uname`|tr '[:upper:]' '[:lower:]')
+	echo "OS=${os}"
+	type "curl"
+	type "wget"
 	mkdir ${GOPATH}/bin
 	curl https://glide.sh/get | sh
 
