@@ -8,8 +8,14 @@ go:
 services:
   - mysql
 
+addons:
+  apt:
+    sources:
+      - sourceline: 'ppa:masterminds/glide'
+    packages:
+      - glide
+
 install:
-  - make glide
   - make deps
   - make initdb
   - make inittest
