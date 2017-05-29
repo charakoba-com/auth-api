@@ -12,6 +12,7 @@ install:
   - make glide
   - make deps
   - make initdb
+  - make inittest
 
 script:
   - go vet -n -x
