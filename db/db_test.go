@@ -12,7 +12,8 @@ func TestDBConnection(t *testing.T) {
 		t.Errorf("%s", err)
 		return
 	}
-	if err = db.DB.Ping(); err != nil {
+	_, err = db.BeginTx()
+	if err != nil {
 		t.Errorf("%s", err)
 		return
 	}
