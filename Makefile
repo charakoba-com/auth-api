@@ -13,5 +13,5 @@ initdb:
 	@mysql -u root -e "CREATE DATABASE apidb;"
 	@mysql -u root apidb < sql/authapi.sql
 
-inittest: initdb
+inittest:
 	@mysql -u root apidb < sql/test_data.sql
