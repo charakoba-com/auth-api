@@ -14,8 +14,8 @@ install:
   - make initdb
 
 script:
-  - go vet
-  - go test
+  - go vet -n -x
+  - go test -v
 
 notifications:
   email: false
