@@ -77,6 +77,11 @@ func TestUpdateUser(t *testing.T) {
 			return
 		}
 		u = db.User{}
+		tx, err = db.BeginTx()
+		if err != nil {
+			t.Errorf("%s", err)
+			return
+		}
 		err = u.Lookup(tx, name)
 		if err != nil {
 			t.Errorf("%s", err)
