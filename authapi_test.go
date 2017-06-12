@@ -36,3 +36,29 @@ func TestHealthCheckHandler(t *testing.T) {
 		return
 	}
 }
+
+func TestAlgorithmHandler(t *testing.T) {
+	ts := httptest.NewServer(http.HandlerFunc(authapi.GetAlgorithmHandler))
+	defer ts.Close()
+
+	buf := bytes.Buffer{}
+	json.NewEncoder(&buf).Encode(map[string]string{
+		"alg": "RS512",
+	})
+
+	r, err := http.Get(ts.URL)
+	if err != nil {
+		t.Errorf("%s", err)
+		return
+	}
+
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		t.Errorf("%s", err)
+		return
+	}
+	if string(data) != buf.String() {
+		t.Errorf("%s != %s", data, buf.String())
+		return
+	}
+}

@@ -10,6 +10,7 @@ import (
 // Config struct
 type Config struct {
 	HealthCheckMessage string
+	Algorithm          string
 }
 
 var config Config
@@ -20,9 +21,11 @@ func init() {
 	viper.AddConfigPath("$HOME/.authapi")
 	viper.AddConfigPath(".")
 	viper.SetDefault("healthCheckMessage", "hello, world")
+	viper.SetDefault("algorithm", "RS512")
 	viper.ReadInConfig()
 	config = Config{
 		HealthCheckMessage: viper.GetString("healthCheckMessage"),
+		Algorithm:          viper.GetString("algorithm"),
 	}
 }
 
@@ -57,6 +60,10 @@ func postAuthHandler(w http.ResponseWriter, r *http.Request) {
 // GET /algorithm
 // get using algorithm handler
 func getAlgorithmHandler(w http.ResponseWriter, r *http.Request) {
+	response := map[string]string{
+		"alg": config.Algorithm,
+	}
+	httpJSON(w, response)
 }
 
 // POST /verify
