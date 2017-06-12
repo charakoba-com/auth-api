@@ -16,8 +16,7 @@ func TestCreateUser(t *testing.T) {
 		t.Errorf("%s", err)
 		return
 	}
-	err = u.Create(tx)
-	if err != nil {
+	if err = u.Create(tx); err != nil {
 		t.Errorf("%s", err)
 		return
 	}
