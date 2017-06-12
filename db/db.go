@@ -16,6 +16,7 @@ func Init(c *mysql.Config) (err error) {
 	if c == nil {
 		c = &mysql.Config{
 			User:      "root",
+			Passwd:    "password",
 			Net:       "tcp",
 			Addr:      "127.0.0.1:3306",
 			DBName:    "apidb",
