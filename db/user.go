@@ -34,6 +34,9 @@ func (u *User) Create(tx *sql.Tx) error {
 	if err != nil {
 		return errors.Wrap(err, `creating user record`)
 	}
+	if err = tx.Commit(); err != nil {
+		return errors.Wrap(err, `commiting transaction`)
+	}
 
 	return nil
 }
@@ -65,6 +68,9 @@ func (u *User) Update(tx *sql.Tx) error {
 	if err != nil {
 		return errors.Wrap(err, `updating user record`)
 	}
+	if err = tx.Commit(); err != nil {
+		return errors.Wrap(err, `cammitting transaction`)
+	}
 	u.key = u.Name
 	return nil
 }
@@ -78,6 +84,9 @@ func (u *User) Delete(tx *sql.Tx) error {
 	_, err := tx.Exec(stmt.String(), u.Name)
 	if err != nil {
 		return errors.Wrap(err, `deleting user record`)
+	}
+	if err = tx.Commit(); err != nil {
+		return errors.Wrap(err, `committing transaction`)
 	}
 	u.key = ""
 	u.Name = ""
