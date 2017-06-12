@@ -1,9 +1,13 @@
 package authapi
 
 import (
+	"encoding/json"
+	"io/ioutil"
 	"log"
 	"net/http"
+	"time"
 
+	"github.com/charakoba-com/auth-api/db"
 	"github.com/spf13/viper"
 )
 
@@ -40,6 +44,39 @@ func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
 // POST /user
 // create user handler
 func postUserHandler(w http.ResponseWriter, r *http.Request) {
+	u := db.User{}
+
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		httpError(w, 400, `reading request`, err)
+		return
+	}
+
+	var createUserRequest db.CreateUserRequest
+	if err = json.Unmarshal(data, &createUserRequest); err != nil {
+		httpError(w, 500, `invalid json`, err)
+		return
+	}
+
+	u.Name = createUserRequest.Name
+	u.Password = createUserRequest.Password
+	u.CreatedOn = time.Now()
+	u.ModifiedOn = time.Now()
+	log.Printf(`CREATE USER :: {"username": "%s", "password": "%s"}`, u.Name, u.Password)
+	tx, err := db.BeginTx()
+	if err != nil {
+		httpError(w, 500, `database transaction`, err)
+		return
+	}
+
+	if err = u.Create(tx); err != nil {
+		httpError(w, 500, `creating user`, err)
+		return
+	}
+	response := map[string]string{
+		"message": "SUCCESS",
+	}
+	httpJSON(w, response)
 }
 
 // DELETE /user

@@ -10,3 +10,9 @@ type User struct {
 	CreatedOn  time.Time
 	ModifiedOn time.Time
 }
+
+// CreateUserRequest represents request body of Create User
+type CreateUserRequest struct {
+	Name     string `json:"username"`
+	Password string `json:"password"`
+}

@@ -20,6 +20,13 @@ func TestCreateUser(t *testing.T) {
 		t.Errorf("%s", err)
 		return
 	}
+
+	row := tx.QueryRow(`SELECT username, password FROM users WHERE username=Taro`)
+	var scu db.User
+	if err := scu.Scan(row); err != nil {
+		t.Errorf("%s", err)
+		return
+	}
 }
 
 func TestLookupUser(t *testing.T) {
