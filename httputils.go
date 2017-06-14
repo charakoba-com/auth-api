@@ -3,6 +3,7 @@ package authapi
 import (
 	"bytes"
 	"encoding/json"
+	"log"
 	"net/http"
 )
 
@@ -12,9 +13,9 @@ func httpJSONWithStatus(w http.ResponseWriter, status int, v interface{}) {
 		httpError(w, http.StatusInternalServerError, `encode json`, err)
 		return
 	}
-
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(status)
+	log.Printf("%d %s", status, buf.String())
 	buf.WriteTo(w)
 }
 

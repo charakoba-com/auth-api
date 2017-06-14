@@ -2,119 +2,43 @@ package db_test
 
 import (
 	"testing"
+	"time"
 
 	"github.com/charakoba-com/auth-api/db"
 )
 
-func TestCreateUser(t *testing.T) {
-	u := db.User{
-		Name:     "Taro",
-		Password: "none",
-	}
-	tx, err := db.BeginTx()
-	if err != nil {
-		t.Errorf("%s", err)
-		return
-	}
-	if err = u.Create(tx); err != nil {
-		t.Errorf("%s", err)
-		return
-	}
-	tx, err = db.BeginTx()
-	if err != nil {
-		t.Errorf("%s", err)
-		return
-	}
-	row := tx.QueryRow(`SELECT username, password, created_on, modified_on FROM users WHERE username='Taro'`)
-	var scu db.User
-	if err := scu.Scan(row); err != nil {
-		t.Errorf("%s", err)
-		return
-	}
-}
-
-func TestLookupUser(t *testing.T) {
+func TestLoad(t *testing.T) {
 	u := db.User{}
-	tx, err := db.BeginTx()
-	if err != nil {
+	db.Init(nil)
+	tx, _ := db.BeginTx()
+	if err := u.Load(tx, "lookupID"); err != nil {
 		t.Errorf("%s", err)
 		return
 	}
-	err = u.Lookup(tx, "testuser")
-	if err != nil {
-		t.Errorf("%s", err)
+	if u.ID != "lookupID" {
+		t.Errorf("%s != lookupID", u.ID)
 		return
 	}
-	if u.Name != "testuser" {
-		t.Errorf("%s != testuser", u.Name)
+	if u.Name != "lookupuser" {
+		t.Errorf("%s != lookupuser", u.Name)
 		return
 	}
 	if u.Password != "testpasswd" {
 		t.Errorf("%s != testpasswd", u.Password)
 		return
 	}
-}
-
-func TestUpdateUser(t *testing.T) {
-	u := db.User{}
-	tx, err := db.BeginTx()
-	if err != nil {
-		t.Errorf("%s", err)
+	loc, _ := time.LoadLocation("")
+	exTime := time.Date(2017, 1, 1, 0, 0, 0, 0, loc)
+	if u.CreatedOn != exTime {
+		t.Errorf("%s != %s", u.CreatedOn, exTime)
 		return
 	}
-	err = u.Lookup(tx, "updateuser")
-	if err != nil {
-		t.Errorf("%s", err)
+	if !u.ModifiedOn.Valid {
+		t.Errorf("%t", u.ModifiedOn.Valid)
 		return
 	}
-
-	names := []string{"jiro", "saburo"}
-	for _, name := range names {
-		u.Name = name
-		err = u.Update(tx)
-		if err != nil {
-			t.Errorf("%s", err)
-			return
-		}
-		u = db.User{}
-		tx, err = db.BeginTx()
-		if err != nil {
-			t.Errorf("%s", err)
-			return
-		}
-		err = u.Lookup(tx, name)
-		if err != nil {
-			t.Errorf("%s", err)
-			return
-		}
-		if u.Name != name {
-			t.Errorf("%s != %s", u.Name, name)
-			return
-		}
-	}
-}
-
-func TestDeleteUser(t *testing.T) {
-	u := db.User{}
-	tx, err := db.BeginTx()
-	if err != nil {
-		t.Errorf("%s", err)
-		return
-	}
-	err = u.Lookup(tx, "deleteuser")
-	if err != nil {
-		t.Errorf("%s", err)
-		return
-	}
-
-	err = u.Delete(tx)
-	if err != nil {
-		t.Errorf("%s", err)
-		return
-	}
-	err = u.Lookup(tx, "deleteuser")
-	if err == nil {
-		t.Errorf("%s should not be", u.Name)
+	if u.ModifiedOn.Time != exTime {
+		t.Errorf("%s != %s", u.ModifiedOn.Time, exTime)
 		return
 	}
 }

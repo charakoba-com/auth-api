@@ -1,18 +1,16 @@
 package db
 
-import "time"
+import (
+	"time"
+
+	"github.com/go-sql-driver/mysql"
+)
 
 // User represents API user including admin and regular user
 type User struct {
-	key        string
+	ID         string
 	Name       string
 	Password   string
 	CreatedOn  time.Time
-	ModifiedOn time.Time
-}
-
-// CreateUserRequest represents request body of Create User
-type CreateUserRequest struct {
-	Name     string `json:"username"`
-	Password string `json:"password"`
+	ModifiedOn mysql.NullTime
 }

@@ -30,25 +30,26 @@ func Run(listen string) error {
 func (s *Server) setupRoutes() {
 	log.Printf("Initialize Routings...")
 	r := s.Router
-	r.HandleFunc(`/`, healthCheckHandler)
+
+	r.HandleFunc(`/`, HealthCheckHandler)
 
 	// /user/...
 	user := r.PathPrefix(`/user`).Subrouter()
-	user.HandleFunc(`/`, postUserHandler).
+	user.HandleFunc(``, CreateUserHandler).
 		Methods("POST")
-	user.HandleFunc(`/`, deleteUserHandler).
+	user.HandleFunc(`/{id}`, LookupUserHandler).
+		Methods("GET")
+	user.HandleFunc(``, UpdateUserHandler).
+		Methods("PUT")
+	user.HandleFunc(`/{id}`, DeleteUserHandler).
 		Methods("DELETE")
-	user.HandleFunc(`/list`, getUserListHandler).
-		Methods("GET")
+	user.HandleFunc(`/list`, ListupUserHandler)
 
-	r.HandleFunc(`/auth`, postAuthHandler).
-		Methods("POST")
-	r.HandleFunc(`/algorithm`, getAlgorithmHandler).
-		Methods("GET")
-	r.HandleFunc(`/alg`, getAlgorithmHandler). // alias to /algorithm
-		Methods("GET")
-	r.HandleFunc(`/verify`, postVerifyHandler).
-		Methods("POST")
-	r.HandleFunc(`/key`, getKeyHandler).
-		Methods("GET")
+	r.HandleFunc(`/auth`, AuthHandler)
+	r.HandleFunc(`/algorithm`, GetAlgorithmHandler)
+	r.HandleFunc(`/alg`, GetAlgorithmHandler) // alias to /algorithm
+	r.HandleFunc(`/verify`, VerifyHandler)
+	r.HandleFunc(`/key`, GetKeyHandler)
+
+	r.NotFoundHandler = http.HandlerFunc(NotFoundHandler)
 }

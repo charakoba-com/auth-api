@@ -3,95 +3,89 @@ package db
 import (
 	"bytes"
 	"database/sql"
+	"log"
 	"time"
 
 	"github.com/pkg/errors"
 )
 
-// UserTable name
-const UserTable = `users`
-
-// UserSelectColumns is a list of select columns
-const UserSelectColumns = `username, password, created_on, modified_on`
-
-// Scan user data from database row
+// Scan raw database row to user
 func (u *User) Scan(scanner interface {
 	Scan(...interface{}) error
 }) error {
-	return scanner.Scan(&u.Name, &u.Password, &u.CreatedOn, &u.ModifiedOn)
+	return scanner.Scan(&u.ID, &u.Name, &u.Password, &u.CreatedOn, &u.ModifiedOn)
 }
 
-// Create saves user into database
+// Create User
 func (u *User) Create(tx *sql.Tx) error {
-	u.CreatedOn = time.Now()
-	u.ModifiedOn = time.Now()
+	log.Printf("db.User.Create %s", u.ID)
+
+	now := time.Now()
 
 	stmt := bytes.Buffer{}
 	stmt.WriteString(`INSERT INTO `)
-	stmt.WriteString(UserTable)
-	stmt.WriteString(` (username, password, created_on, modified_on) VALUES (?, ?, ?, ?)`)
-	_, err := tx.Exec(stmt.String(), u.Name, u.Password, u.CreatedOn, u.ModifiedOn)
-	if err != nil {
-		return errors.Wrap(err, `creating user record`)
-	}
-	if err = tx.Commit(); err != nil {
-		return errors.Wrap(err, `commiting transaction`)
-	}
+	stmt.WriteString(userTable)
+	stmt.WriteString(` (id, username, password, created_on) VALUES (?, ?, ?, ?)`)
 
-	return nil
+	log.Printf("SQL QUERY: %s: with values %s, %s, %s, %s", stmt.String(), u.ID, u.Name, u.Password, now)
+
+	_, err := tx.Exec(stmt.String(), u.ID, u.Name, u.Password, now)
+	return err
 }
 
-// Lookup user by username
-func (u *User) Lookup(tx *sql.Tx, username string) error {
+// Load user data by user ID
+func (u *User) Load(tx *sql.Tx, id string) error {
+	log.Printf("db.User.Load %s", id)
+
 	stmt := bytes.Buffer{}
 	stmt.WriteString(`SELECT `)
-	stmt.WriteString(UserSelectColumns)
+	stmt.WriteString(userSelectColumns)
 	stmt.WriteString(` FROM `)
-	stmt.WriteString(UserTable)
-	stmt.WriteString(` WHERE username=?`)
-	row := tx.QueryRow(stmt.String(), username)
-	if err := u.Scan(row); err != nil {
-		return errors.Wrap(err, `scanning user record`)
-	}
-	u.key = u.Name
+	stmt.WriteString(userTable)
+	stmt.WriteString(` WHERE id = ?`)
 
+	log.Printf("SQL QUERY: %s: with values %s", stmt.String(), id)
+
+	row := tx.QueryRow(stmt.String(), id)
+
+	if err := u.Scan(row); err != nil {
+		return errors.Wrap(err, "scanning row")
+	}
 	return nil
 }
 
-// Update user data
+// Update user
 func (u *User) Update(tx *sql.Tx) error {
+	if u.ID == "" {
+		return errors.New(`user ID is not valid`)
+	}
+	log.Printf("db.User.Update %s", u.ID)
+
 	stmt := bytes.Buffer{}
 	stmt.WriteString(`UPDATE `)
-	stmt.WriteString(UserTable)
-	stmt.WriteString(` SET username = ?, password = ? WHERE username = ?`)
-	_, err := tx.Exec(stmt.String(), u.Name, u.Password, u.key)
-	if err != nil {
-		return errors.Wrap(err, `updating user record`)
-	}
-	if err = tx.Commit(); err != nil {
-		return errors.Wrap(err, `cammitting transaction`)
-	}
-	u.key = u.Name
-	return nil
+	stmt.WriteString(userTable)
+	stmt.WriteString(` SET username = ?, password = ? WHERE id = ?`)
+	log.Printf("SQL QUERY: %s: with values %s, %s, %s", stmt.String(), u.Name, u.Password, u.ID)
+
+	_, err := tx.Exec(stmt.String(), u.Name, u.Password, u.ID)
+
+	return err
 }
 
-// Delete user data
+// Delete user from DB by user ID
 func (u *User) Delete(tx *sql.Tx) error {
+	if u.ID == "" {
+		return errors.New(`user ID is not valid`)
+	}
+	log.Printf("db.User.Delete %s", u.ID)
+
 	stmt := bytes.Buffer{}
 	stmt.WriteString(`DELETE FROM `)
-	stmt.WriteString(UserTable)
-	stmt.WriteString(` WHERE username=?`)
-	_, err := tx.Exec(stmt.String(), u.Name)
-	if err != nil {
-		return errors.Wrap(err, `deleting user record`)
-	}
-	if err = tx.Commit(); err != nil {
-		return errors.Wrap(err, `committing transaction`)
-	}
-	u.key = ""
-	u.Name = ""
-	u.Password = ""
-	u.CreatedOn = time.Time{}
-	u.ModifiedOn = time.Time{}
-	return nil
+	stmt.WriteString(userTable)
+	stmt.WriteString(` WHERE id = ?`)
+	log.Printf("SQL QUERY: %s: with values %s", stmt.String(), u.ID)
+
+	_, err := tx.Exec(stmt.String(), u.ID)
+
+	return err
 }
