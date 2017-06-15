@@ -35,7 +35,7 @@ func TestHealthCheckHandlerOK(t *testing.T) {
 		return
 	}
 	defer res.Body.Close()
-
+	// I/O test
 	var hcres model.HealthCheckResponse
 	if err := json.NewDecoder(res.Body).Decode(&hcres); err != nil {
 		t.Errorf("%s", err)
@@ -54,6 +54,7 @@ func TestHealthCheckHandlerOK(t *testing.T) {
 func TestHealthCheckHandlerMethodNotAllowed(t *testing.T) {
 	requestBody := bytes.Buffer{}
 	res, err := http.Post(ts.URL, "", &requestBody)
+	// I/O test
 	if err != nil {
 		t.Errorf("%s", err)
 		return
@@ -74,6 +75,7 @@ func TestCreateUserHandlerOK(t *testing.T) {
 		t.Errorf("%s", err)
 		return
 	}
+	// I/O test
 	if res.StatusCode != 200 {
 		t.Errorf("status 200 OK is expected, but %s", res.Status)
 		return
@@ -93,6 +95,7 @@ func TestCreateUserHandlerOK(t *testing.T) {
 		t.Errorf("%s", err)
 		return
 	}
+	// data test
 	var usrSvc service.UserService
 	user, err := usrSvc.Lookup(tx, `createID`)
 	if err != nil {
@@ -118,6 +121,7 @@ func TestLookupUserHandlerOK(t *testing.T) {
 		t.Errorf("%s", err)
 		return
 	}
+	// I/O test
 	if res.StatusCode != 200 {
 		t.Errorf("status 200 OK is expected, but %s", res.Status)
 		return
@@ -148,6 +152,7 @@ func TestLookupUserHandlerNotFound(t *testing.T) {
 		t.Errorf("%s", err)
 		return
 	}
+	// I/O test
 	if res.StatusCode != 404 {
 		t.Errorf("status 404 Not Found is expected, but %s", res.Status)
 		return
@@ -162,6 +167,7 @@ func TestUpdateUserHandlerOK(t *testing.T) {
 		Username: "updateduser",
 		Password: "testpasswd",
 	}
+	// I/O test
 	requestBody := bytes.Buffer{}
 	if err := json.NewEncoder(&requestBody).Encode(updateUserRequest); err != nil {
 		t.Errorf("%s", err)
@@ -191,6 +197,7 @@ func TestUpdateUserHandlerOK(t *testing.T) {
 		t.Errorf("response message is invalid")
 		return
 	}
+	// data test
 	tx, err := db.BeginTx()
 	if err != nil {
 		t.Errorf("%s", err)
@@ -226,7 +233,7 @@ func TestDeleteUserHandlerOK(t *testing.T) {
 		t.Errorf("%s", err)
 		return
 	}
-
+	// I/O test
 	if res.StatusCode != 200 {
 		t.Errorf("status 200 OK is expected, but %s", res.Status)
 		return
@@ -245,6 +252,7 @@ func TestDeleteUserHandlerOK(t *testing.T) {
 		t.Errorf("%s", err)
 		return
 	}
+	// data test
 	var usrSvc service.UserService
 	_, err = usrSvc.Lookup(tx, `deleteID`)
 	if err == nil {
@@ -272,7 +280,7 @@ func TestGetAlgorithmHandlerOK(t *testing.T) {
 			return
 		}
 		defer res.Body.Close()
-
+		// I/O test
 		var gares model.GetAlgorithmResponse
 		if err := json.NewDecoder(res.Body).Decode(&gares); err != nil {
 			t.Errorf("%s", err)
@@ -292,6 +300,7 @@ func TestGetAlgorithmHandlerMethodNotAllowed(t *testing.T) {
 		t.Errorf("%s", err)
 		return
 	}
+	// I/O test
 	if res.StatusCode != 405 {
 		t.Errorf("status 405 Method Not Allowed is expected, but %s", res.Status)
 		return
