@@ -89,3 +89,42 @@ func (u *User) Delete(tx *sql.Tx) error {
 
 	return err
 }
+
+// Listup Users
+func (l *UserList)Listup(tx *sql.Tx) error {
+	log.Printf("db.User.Listup")
+
+	stmt := bytes.Buffer{}
+	stmt.WriteString(`SELECT `)
+	stmt.WriteString(userSelectColumns)
+	stmt.WriteString(` FROM `)
+	stmt.WriteString(userTable)
+
+	log.Printf("SQL QUERY: %s", stmt.String())
+
+	rows, err := tx.Query(stmt.String())
+	if err != nil {
+		return errors.Wrap(err, `querying stmt`)
+	}
+	if err:= l.FromRows(rows); err != nil {
+		return errors.Wrap(err, "scanning rows")
+	}
+	return nil
+}
+
+// FromRows scanning rows into user list
+func (l *UserList) FromRows(rows *sql.Rows) error {
+	log.Printf("db.User.FromRows")
+
+	res := UserList{}
+
+	for rows.Next() {
+		user := User{}
+		if err := user.Scan(rows); err != nil {
+			return errors.Wrap(err, `scanning row`)
+		}
+		res = append(res, user)
+	}
+	*l = res
+	return nil
+}

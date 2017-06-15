@@ -186,6 +186,23 @@ func DeleteUserHandler(w http.ResponseWriter, r *http.Request) {
 func ListupUserHandler(w http.ResponseWriter, r *http.Request) {
 	// NotImplemented
 	log.Printf("ListupUserHandler")
+	method := r.Method
+	if method != `GET` {
+		httpError(w, http.StatusMethodNotAllowed, `method GET is expected`, nil)
+		return
+	}
+	tx, err := db.BeginTx()
+	if err != nil {
+		httpError(w, http.StatusInternalServerError, `database error`, err)
+		return
+	}
+	var usrSvc service.UserService
+	users ,err := usrSvc.Listup(tx)
+	if err != nil {
+		httpError(w, http.StatusInternalServerError, `internal server error`, err)
+		return
+	}
+	httpJSON(w, model.ListupUserResponse{Users: *users})
 }
 
 // AuthHandler is a HTTP handler, which authes with username and password

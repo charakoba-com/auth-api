@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"sort"
 	"testing"
 
 	authapi "github.com/charakoba-com/auth-api"
@@ -109,6 +110,15 @@ func TestCreateUserHandlerOK(t *testing.T) {
 	}
 	if *user != expectedUser {
 		t.Errorf("%s != %s", user, expectedUser)
+		return
+	}
+	// reset
+	if err := usrSvc.Delete(tx, "createID"); err != nil {
+		t.Errorf("%s", err)
+		return
+	}
+	if err := tx.Commit(); err != nil {
+		t.Errorf("%s", err)
 		return
 	}
 }
@@ -226,6 +236,15 @@ func TestUpdateUserHandlerOK(t *testing.T) {
 		t.Errorf("%s != %s", user, expectedUser)
 		return
 	}
+	// reset
+	if err := usrSvc.Update(tx, &db.User{ID: "updateID", Name: "updateuser", Password: "testpasswd"}); err != nil {
+		t.Errorf("%s", err)
+		return
+	}
+	if err := tx.Commit(); err != nil {
+		t.Errorf("%s", err)
+		return
+	}
 }
 
 func TestDeleteUserHandlerOK(t *testing.T) {
@@ -267,6 +286,15 @@ func TestDeleteUserHandlerOK(t *testing.T) {
 		t.Errorf("sql.ErrNoRows should be occured, but there is no error")
 		return
 	}
+	// reset
+	if err := usrSvc.Create(tx, &db.User{ID: "deleteID", Name: "deleteuser", Password: "testpasswd"}); err != nil {
+		t.Errorf("%s", err)
+		return
+	}
+	if err := tx.Commit(); err != nil {
+		t.Errorf("%s", err)
+		return
+	}
 }
 
 func TestListupUserHandlerOK(t *testing.T) {
@@ -283,13 +311,31 @@ func TestListupUserHandlerOK(t *testing.T) {
 		return
 	}
 	expected := model.ListupUserResponse{
-		Users: []model.User{},
+		Users: model.UserList{
+			model.User{
+				ID:       "lookupID",
+				Name:     "lookupuser",
+				Password: "testpasswd",
+			},
+			model.User{
+				ID:       "updateID",
+				Name:     "updateuser",
+				Password: "testpasswd",
+			},
+			model.User{
+				ID:       "deleteID",
+				Name:     "deleteuser",
+				Password: "testpasswd",
+			},
+		},
 	}
 	var listupUserResponse model.ListupUserResponse
 	if err := json.NewDecoder(res.Body).Decode(&listupUserResponse); err != nil {
 		t.Errorf("%s", err)
 		return
 	}
+	sort.Sort(expected.Users)
+	sort.Sort(listupUserResponse.Users)
 	for i, user := range listupUserResponse.Users {
 		if user != expected.Users[i] {
 			t.Errorf("%s != %s", user, expected.Users[i])

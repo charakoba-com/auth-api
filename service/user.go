@@ -50,3 +50,21 @@ func (v *UserService) Delete(tx *sql.Tx, id string) error {
 	}
 	return nil
 }
+
+// Listup User
+func (v *UserService) Listup(tx *sql.Tx) (*model.UserList, error) {
+	log.Printf("service.User.Listup")
+
+	var userList db.UserList
+	if err := userList.Listup(tx); err != nil {
+		return nil, errors.Wrap(err, `loading user list`)
+	}
+	l := make(model.UserList, len(userList))
+	for i, user := range userList {
+		if err := l[i].FromDB(&user); err != nil {
+			return nil, errors.Wrap(err, `converting db.User to model.User`)
+		}
+	}
+
+	return &l, nil
+}

@@ -40,3 +40,20 @@ func (u *User) ToDB(du *db.User) error {
 	du.Password = u.Password
 	return nil
 }
+
+// sort.Interface implementation
+
+// Len returns the number of elements
+func (ul UserList) Len() int {
+	return len(ul)
+}
+
+// Swap two elements
+func (ul UserList) Swap(i, j int) {
+	ul[i], ul[j] = ul[j], ul[i]
+}
+
+// Less for sort
+func (ul UserList) Less(i, j int) bool {
+	return ul[i].ID < ul[j].ID
+}

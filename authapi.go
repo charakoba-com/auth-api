@@ -35,6 +35,8 @@ func (s *Server) setupRoutes() {
 
 	// /user/...
 	user := r.PathPrefix(`/user`).Subrouter()
+	user.HandleFunc(`/list`, ListupUserHandler).
+		Methods("GET")
 	user.HandleFunc(``, CreateUserHandler).
 		Methods("POST")
 	user.HandleFunc(`/{id}`, LookupUserHandler).
@@ -43,7 +45,6 @@ func (s *Server) setupRoutes() {
 		Methods("PUT")
 	user.HandleFunc(`/{id}`, DeleteUserHandler).
 		Methods("DELETE")
-	user.HandleFunc(`/list`, ListupUserHandler)
 
 	r.HandleFunc(`/auth`, AuthHandler)
 	r.HandleFunc(`/algorithm`, GetAlgorithmHandler)

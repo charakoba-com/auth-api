@@ -14,3 +14,6 @@ type User struct {
 	CreatedOn  time.Time
 	ModifiedOn mysql.NullTime
 }
+
+// UserList type
+type UserList []User
