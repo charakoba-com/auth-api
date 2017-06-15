@@ -96,6 +96,19 @@ func TestCreateUserHandlerOK(t *testing.T) {
 		t.Errorf("%s", err)
 		return
 	}
+	defer func() {
+		var usrSvc service.UserService
+		// reset
+		if err := usrSvc.Delete(tx, "createID"); err != nil {
+			t.Errorf("%s", err)
+			return
+		}
+		if err := tx.Commit(); err != nil {
+			t.Errorf("%s", err)
+			return
+		}
+	}()
+
 	// data test
 	var usrSvc service.UserService
 	user, err := usrSvc.Lookup(tx, `createID`)
@@ -110,15 +123,6 @@ func TestCreateUserHandlerOK(t *testing.T) {
 	}
 	if *user != expectedUser {
 		t.Errorf("%s != %s", user, expectedUser)
-		return
-	}
-	// reset
-	if err := usrSvc.Delete(tx, "createID"); err != nil {
-		t.Errorf("%s", err)
-		return
-	}
-	if err := tx.Commit(); err != nil {
-		t.Errorf("%s", err)
 		return
 	}
 }
