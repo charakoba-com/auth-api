@@ -70,7 +70,7 @@ func TestCreateUserHandlerOK(t *testing.T) {
 	t.Logf("POST %s", path)
 	requestBody := bytes.Buffer{}
 	requestBody.WriteString(`{"id": "createID", "username": "createdUser", "password": "testpasswd"}`)
-	res, err := http.Post(ts.URL + path, "application/json", &requestBody)
+	res, err := http.Post(ts.URL+path, "application/json", &requestBody)
 	if err != nil {
 		t.Errorf("%s", err)
 		return
@@ -103,8 +103,8 @@ func TestCreateUserHandlerOK(t *testing.T) {
 		return
 	}
 	expectedUser := model.User{
-		ID: "createID",
-		Name: "createdUser",
+		ID:       "createID",
+		Name:     "createdUser",
 		Password: "testpasswd",
 	}
 	if *user != expectedUser {
@@ -126,7 +126,6 @@ func TestLookupUserHandlerOK(t *testing.T) {
 		t.Errorf("status 200 OK is expected, but %s", res.Status)
 		return
 	}
-
 
 	var lures model.LookupUserResponse
 	if err := json.NewDecoder(res.Body).Decode(&lures); err != nil {
@@ -173,7 +172,7 @@ func TestUpdateUserHandlerOK(t *testing.T) {
 		t.Errorf("%s", err)
 		return
 	}
-	req, err := http.NewRequest("PUT", ts.URL + path, &requestBody)
+	req, err := http.NewRequest("PUT", ts.URL+path, &requestBody)
 	if err != nil {
 		t.Errorf("%s", err)
 		return
@@ -210,8 +209,8 @@ func TestUpdateUserHandlerOK(t *testing.T) {
 		return
 	}
 	expectedUser := model.User{
-		ID: "updateID",
-		Name: "updateduser",
+		ID:       "updateID",
+		Name:     "updateduser",
 		Password: "testpasswd",
 	}
 	if *user != expectedUser {
@@ -223,7 +222,7 @@ func TestUpdateUserHandlerOK(t *testing.T) {
 func TestDeleteUserHandlerOK(t *testing.T) {
 	path := "/user/deleteID"
 	t.Logf("DELETE %s", path)
-	req, err := http.NewRequest("DELETE", ts.URL + path, nil)
+	req, err := http.NewRequest("DELETE", ts.URL+path, nil)
 	if err != nil {
 		t.Errorf("%s", err)
 		return
