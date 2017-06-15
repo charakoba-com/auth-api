@@ -119,7 +119,7 @@ func TestCreateUserHandlerOK(t *testing.T) {
 	expectedUser := model.User{
 		ID:       "createID",
 		Name:     "createdUser",
-		Password: "testpasswd",
+		Password: "94bcc83bba984e580ba817a81f082de9a800cfd413018521f2304702166134f98f5ceac8cc32284a8d6ea62d43feb3f58c9453aefd5858f39bea6ad17098060a",
 	}
 	if *user != expectedUser {
 		t.Errorf("%s != %s", user, expectedUser)
@@ -233,7 +233,7 @@ func TestUpdateUserHandlerOK(t *testing.T) {
 	expectedUser := model.User{
 		ID:       "updateID",
 		Name:     "updateduser",
-		Password: "testpasswd",
+		Password: "c9fb76e49a114d81796a810eaea344e6f21f1dd32d4940e1fa6f4b0286280259ca41ac455ba0da0d9fcc71e8f65645420491a4c6917f88e719f68bf68c869c34",
 	}
 	if *user != expectedUser {
 		t.Errorf("%s != %s", user, expectedUser)
