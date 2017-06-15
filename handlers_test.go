@@ -156,6 +156,15 @@ func TestLookupUserHandlerNotFound(t *testing.T) {
 		t.Errorf("status 404 Not Found is expected, but %s", res.Status)
 		return
 	}
+	var errorResponse model.ErrorResponse
+	if err := json.NewDecoder(res.Body).Decode(&errorResponse); err != nil {
+		t.Errorf("%s", err)
+		return
+	}
+	if errorResponse.Message != "user not found" {
+		t.Errorf(`"%s" != "user not found"`, errorResponse.Message)
+		return
+	}
 }
 
 func TestUpdateUserHandlerOK(t *testing.T) {

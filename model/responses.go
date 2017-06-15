@@ -1,5 +1,11 @@
 package model
 
+// ErrorResponse is a response type returned when HTTP error is raised
+type ErrorResponse struct {
+	Message string `json:"message"`
+	Error   string `json:"error,omitempty"`
+}
+
 // HealthCheckResponse is a response type returned from HealthCheckHandler
 type HealthCheckResponse struct {
 	Message string `json:"message"`
