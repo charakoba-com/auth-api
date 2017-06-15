@@ -6,6 +6,7 @@ import (
 	"log"
 	"time"
 
+	"github.com/charakoba-com/auth-api/utils"
 	"github.com/pkg/errors"
 )
 
@@ -29,7 +30,10 @@ func (u *User) Create(tx *sql.Tx) error {
 
 	log.Printf("SQL QUERY: %s: with values %s, %s, %s, %s", stmt.String(), u.ID, u.Name, u.Password, now)
 
-	_, err := tx.Exec(stmt.String(), u.ID, u.Name, u.Password, now)
+	// hash user's password
+	hashed := utils.HashPassword(u.Password, u.ID + u.Name)
+
+	_, err := tx.Exec(stmt.String(), u.ID, u.Name, hashed, now)
 	return err
 }
 
@@ -67,7 +71,10 @@ func (u *User) Update(tx *sql.Tx) error {
 	stmt.WriteString(` SET username = ?, password = ? WHERE id = ?`)
 	log.Printf("SQL QUERY: %s: with values %s, %s, %s", stmt.String(), u.Name, u.Password, u.ID)
 
-	_, err := tx.Exec(stmt.String(), u.Name, u.Password, u.ID)
+	// hash user's password
+	hashed := utils.HashPassword(u.Password, u.ID + u.Name)
+
+	_, err := tx.Exec(stmt.String(), u.Name, hashed, u.ID)
 
 	return err
 }
