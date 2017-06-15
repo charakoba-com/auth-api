@@ -143,8 +143,8 @@ func TestLookupUserHandlerOK(t *testing.T) {
 		return
 	}
 	expectedUser := model.User{
-		ID:       "lookupID",
-		Name:     "lookupuser",
+		ID:   "lookupID",
+		Name: "lookupuser",
 	}
 	if lures.User != expectedUser {
 		t.Errorf("%s != %s", lures.User, expectedUser)
@@ -312,16 +312,16 @@ func TestListupUserHandlerOK(t *testing.T) {
 	expected := model.ListupUserResponse{
 		Users: model.UserList{
 			model.User{
-				ID:       "lookupID",
-				Name:     "lookupuser",
+				ID:   "lookupID",
+				Name: "lookupuser",
 			},
 			model.User{
-				ID:       "updateID",
-				Name:     "updateuser",
+				ID:   "updateID",
+				Name: "updateuser",
 			},
 			model.User{
-				ID:       "deleteID",
-				Name:     "deleteuser",
+				ID:   "deleteID",
+				Name: "deleteuser",
 			},
 		},
 	}
