@@ -98,7 +98,7 @@ func (u *User) Delete(tx *sql.Tx) error {
 }
 
 // Listup Users
-func (l *UserList)Listup(tx *sql.Tx) error {
+func (l *UserList) Listup(tx *sql.Tx) error {
 	log.Printf("db.User.Listup")
 
 	stmt := bytes.Buffer{}
@@ -113,7 +113,7 @@ func (l *UserList)Listup(tx *sql.Tx) error {
 	if err != nil {
 		return errors.Wrap(err, `querying stmt`)
 	}
-	if err:= l.FromRows(rows); err != nil {
+	if err := l.FromRows(rows); err != nil {
 		return errors.Wrap(err, "scanning rows")
 	}
 	return nil
