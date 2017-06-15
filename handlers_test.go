@@ -43,6 +43,7 @@ func TestHealthCheckHandlerOK(t *testing.T) {
 	}
 	if res.StatusCode != 200 {
 		t.Errorf("status 200 OK is expected, but %s", res.Status)
+		return
 	}
 	if hcres.Message != `hello, world` {
 		t.Errorf(`"%s" != "hello, world"`, hcres.Message)
