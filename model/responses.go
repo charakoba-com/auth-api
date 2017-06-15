@@ -31,6 +31,11 @@ type DeleteUserResponse struct {
 	Message string `json:"message"`
 }
 
+// ListupUserResponse is a response type returned from ListupUserHandler
+type ListupUserResponse struct {
+	Users []User `json:"user"`
+}
+
 // GetAlgorithmResponse is a response type returned from GetAlgorithmHandler
 type GetAlgorithmResponse struct {
 	Algorithm string `json:"algorithm"`

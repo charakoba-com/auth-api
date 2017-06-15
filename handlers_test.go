@@ -270,6 +270,32 @@ func TestDeleteUserHandlerOK(t *testing.T) {
 }
 
 func TestListupUserHandlerOK(t *testing.T) {
+	path := "/user/list"
+	t.Logf("GET %s", path)
+	res, err := http.Get(ts.URL + path)
+	if err != nil {
+		t.Errorf("%s", err)
+		return
+	}
+	// I/O test
+	if res.StatusCode != 200 {
+		t.Errorf("status 200 OK is expected, but %s", res.Status)
+		return
+	}
+	expected := model.ListupUserResponse{
+		Users: []model.User{},
+	}
+	var listupUserResponse model.ListupUserResponse
+	if err := json.NewDecoder(res.Body).Decode(&listupUserResponse); err != nil {
+		t.Errorf("%s", err)
+		return
+	}
+	for i, user := range listupUserResponse.Users {
+		if user != expected.Users[i] {
+			t.Errorf("%s != %s", user, expected.Users[i])
+			return
+		}
+	}
 }
 
 func TestAuthHandlerOK(t *testing.T) {
