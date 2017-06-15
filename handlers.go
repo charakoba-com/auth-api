@@ -107,6 +107,7 @@ func LookupUserHandler(w http.ResponseWriter, r *http.Request) {
 		httpError(w, http.StatusInternalServerError, `internal server error`, err)
 		return
 	}
+	user.Password = ""
 	httpJSON(w, model.LookupUserResponse{User: *user})
 }
 
@@ -202,7 +203,10 @@ func ListupUserHandler(w http.ResponseWriter, r *http.Request) {
 		httpError(w, http.StatusInternalServerError, `internal server error`, err)
 		return
 	}
-	httpJSON(w, model.ListupUserResponse{Users: *users})
+	for i := range users {
+		users[i].Password = ""
+	}
+	httpJSON(w, model.ListupUserResponse{Users: users})
 }
 
 // AuthHandler is a HTTP handler, which authes with username and password

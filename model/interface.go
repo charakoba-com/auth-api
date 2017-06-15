@@ -4,7 +4,7 @@ package model
 type User struct {
 	ID       string `json:"id"`
 	Name     string `json:"username"`
-	Password string `json:"password"`
+	Password string `json:"password,omitempty"`
 }
 
 // UserList type

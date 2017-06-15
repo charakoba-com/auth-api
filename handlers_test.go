@@ -145,7 +145,6 @@ func TestLookupUserHandlerOK(t *testing.T) {
 	expectedUser := model.User{
 		ID:       "lookupID",
 		Name:     "lookupuser",
-		Password: "testpasswd",
 	}
 	if lures.User != expectedUser {
 		t.Errorf("%s != %s", lures.User, expectedUser)
@@ -315,17 +314,14 @@ func TestListupUserHandlerOK(t *testing.T) {
 			model.User{
 				ID:       "lookupID",
 				Name:     "lookupuser",
-				Password: "testpasswd",
 			},
 			model.User{
 				ID:       "updateID",
 				Name:     "updateuser",
-				Password: "testpasswd",
 			},
 			model.User{
 				ID:       "deleteID",
 				Name:     "deleteuser",
-				Password: "testpasswd",
 			},
 		},
 	}

@@ -52,7 +52,7 @@ func (v *UserService) Delete(tx *sql.Tx, id string) error {
 }
 
 // Listup User
-func (v *UserService) Listup(tx *sql.Tx) (*model.UserList, error) {
+func (v *UserService) Listup(tx *sql.Tx) (model.UserList, error) {
 	log.Printf("service.User.Listup")
 
 	var userList db.UserList
@@ -66,5 +66,5 @@ func (v *UserService) Listup(tx *sql.Tx) (*model.UserList, error) {
 		}
 	}
 
-	return &l, nil
+	return l, nil
 }
