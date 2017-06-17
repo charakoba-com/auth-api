@@ -36,6 +36,12 @@ type ListupUserResponse struct {
 	Users UserList `json:"user"`
 }
 
+// AuthResponse is a response type returned from AuthHandler
+type AuthResponse struct {
+	Message string `json:"message"`
+	Token   string `json:"token"`
+}
+
 // GetAlgorithmResponse is a response type returned from GetAlgorithmHandler
 type GetAlgorithmResponse struct {
 	Algorithm string `json:"algorithm"`

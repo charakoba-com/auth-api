@@ -9,6 +9,7 @@ import (
 	"github.com/charakoba-com/auth-api/db"
 	"github.com/charakoba-com/auth-api/model"
 	"github.com/charakoba-com/auth-api/service"
+	"github.com/charakoba-com/auth-api/utils"
 	"github.com/gorilla/mux"
 	"github.com/pkg/errors"
 )
@@ -213,6 +214,41 @@ func ListupUserHandler(w http.ResponseWriter, r *http.Request) {
 func AuthHandler(w http.ResponseWriter, r *http.Request) {
 	// NotImplemented
 	log.Printf("AuthHandler")
+
+	method := r.Method
+	if method != `POST` {
+		httpError(w, http.StatusMethodNotAllowed, `method POST is expected`, nil)
+		return
+	}
+	var authRequest model.AuthRequest
+	if err := json.NewDecoder(r.Body).Decode(&authRequest); err != nil {
+		httpError(w, http.StatusBadRequest, `invalid json request`, nil)
+		return
+	}
+	tx, err := db.BeginTx()
+	if err != nil {
+		httpError(w, http.StatusInternalServerError, `database errorr`, err)
+		return
+	}
+	var usrSvc service.UserService
+	user, err := usrSvc.Lookup(tx, authRequest.ID)
+	if err != nil {
+		if errors.Cause(err) == sql.ErrNoRows {
+			httpError(w, http.StatusUnauthorized, `auth invalid`, nil)
+			return
+		}
+		httpError(w, http.StatusInternalServerError, `internal server error`, err)
+		return
+	}
+	if user.Password != utils.HashPassword(authRequest.Password, authRequest.ID + user.Name) {
+		httpError(w, http.StatusUnauthorized, `auth invalid`, nil)
+		return
+	}
+
+	httpJSON(w, model.AuthResponse{
+		Message: "auth valid",
+		Token:   "",
+	})
 }
 
 // GetAlgorithmHandler is a HTTP handler, which returns system signature algorithm

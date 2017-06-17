@@ -345,6 +345,95 @@ func TestListupUserHandlerOK(t *testing.T) {
 }
 
 func TestAuthHandlerOK(t *testing.T) {
+	// preparation
+	var usrSvc service.UserService
+	tx, err := db.BeginTx()
+	if err != nil {
+		t.Errorf("%s", err)
+		return
+	}
+	if err := usrSvc.Create(tx, &db.User{ID: "authID", Name: "authuser", Password: "testpasswd"}); err != nil {
+		t.Errorf("%s", err)
+		return
+	}
+	if err := tx.Commit(); err != nil {
+		t.Errorf("%s", err)
+		return
+	}
+	defer func() {
+		tx, err := db.BeginTx()
+		if err != nil {
+			t.Errorf("%s", err)
+			return
+		}
+		var usrSvc service.UserService
+		// reset
+		if err := usrSvc.Delete(tx, "authID"); err != nil {
+			t.Errorf("%s", err)
+			return
+		}
+		if err := tx.Commit(); err != nil {
+			t.Errorf("%s", err)
+			return
+		}
+	}()
+
+	path := "/auth"
+	requestBody := bytes.Buffer{}
+	requestBody.WriteString(`{"id": "authID", "password": "testpasswd"}`)
+	req, err := http.NewRequest("POST", ts.URL+path, &requestBody)
+	if err != nil {
+		t.Errorf("%s", err)
+		return
+	}
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		t.Errorf("%s", err)
+		return
+	}
+	// I/O test
+	if res.StatusCode != 200 {
+		t.Errorf("status 200 OK is expected, but %s", res.Status)
+		return
+	}
+	var authResponse model.AuthResponse
+	if err := json.NewDecoder(res.Body).Decode(&authResponse); err != nil {
+		t.Errorf("%s", err)
+		return
+	}
+	if authResponse.Message != `auth valid` {
+		t.Errorf(`"%s" != "auth valid"`, authResponse.Message)
+		return
+	}
+}
+
+func TestAuthHandlerNotValid(t *testing.T) {
+	path := "/auth"
+	requestBody := bytes.Buffer{}
+	requestBody.WriteString(`{"id": "lookupID", "password": "hogepasswd"}`)
+	req, err := http.NewRequest("POST", ts.URL+path, &requestBody)
+	if err != nil {
+		t.Errorf("%s", err)
+		return
+	}
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		t.Errorf("%s", err)
+		return
+	}
+	if res.StatusCode != 401 {
+		t.Errorf("status 401 Unauthorized is expected, but %s", res.Status)
+		return
+	}
+	var authResponse model.AuthResponse
+	if err := json.NewDecoder(res.Body).Decode(&authResponse); err != nil {
+		t.Errorf("%s", err)
+		return
+	}
+	if authResponse.Message != `auth invalid` {
+		t.Errorf(`"%s" != "auth invalid"`, authResponse.Message)
+		return
+	}
 }
 
 func TestGetAlgorithmHandlerOK(t *testing.T) {

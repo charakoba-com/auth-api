@@ -23,3 +23,9 @@ type UpdateUserRequest struct {
 type DeleteUserRequest struct {
 	ID string `json:"id"`
 }
+
+// AuthRequest represents a request for authenticate user
+type AuthRequest struct {
+	ID       string `json:"id"`
+	Password string `json:"password"`
+}
