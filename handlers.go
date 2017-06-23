@@ -199,7 +199,7 @@ func ListupUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var usrSvc service.UserService
-	users ,err := usrSvc.Listup(tx)
+	users, err := usrSvc.Listup(tx)
 	if err != nil {
 		httpError(w, http.StatusInternalServerError, `internal server error`, err)
 		return
