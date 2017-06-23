@@ -240,7 +240,7 @@ func AuthHandler(w http.ResponseWriter, r *http.Request) {
 		httpError(w, http.StatusInternalServerError, `internal server error`, err)
 		return
 	}
-	if user.Password != utils.HashPassword(authRequest.Password, authRequest.ID + user.Name) {
+	if user.Password != utils.HashPassword(authRequest.Password, authRequest.ID+user.Name) {
 		httpError(w, http.StatusUnauthorized, `auth invalid`, nil)
 		return
 	}
