@@ -11,6 +11,7 @@ type User struct {
 	ID         string
 	Name       string
 	Password   string
+	IsAdmin    bool
 	CreatedOn  time.Time
 	ModifiedOn mysql.NullTime
 }

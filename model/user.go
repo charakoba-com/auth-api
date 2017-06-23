@@ -29,6 +29,7 @@ func (u *User) FromDB(du *db.User) error {
 	u.ID = du.ID
 	u.Name = du.Name
 	u.Password = du.Password
+	u.IsAdmin = du.IsAdmin
 	return nil
 }
 
@@ -38,6 +39,7 @@ func (u *User) ToDB(du *db.User) error {
 	du.ID = u.ID
 	du.Name = u.Name
 	du.Password = u.Password
+	du.IsAdmin = u.IsAdmin
 	return nil
 }
 
