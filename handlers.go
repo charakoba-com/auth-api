@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/charakoba-com/auth-api/db"
+	"github.com/charakoba-com/auth-api/keymgr"
 	"github.com/charakoba-com/auth-api/model"
 	"github.com/charakoba-com/auth-api/service"
 	"github.com/charakoba-com/auth-api/utils"
@@ -14,12 +15,8 @@ import (
 	"github.com/pkg/errors"
 )
 
-const defaultAlgorithm = "RS256"
-
-var algorithm string
-
 func init() {
-	algorithm = defaultAlgorithm
+	keymgr.Init("/etc/authapi/pki/rsa256.key", "/etc/authapi/pki/rsa256.key.pub")
 }
 
 // HealthCheckHandler is a HTTP handler, which path is `/`
@@ -245,9 +242,15 @@ func AuthHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	token, err := utils.GenerateToken(user.Name, user.IsAdmin)
+	if err != nil {
+		httpError(w, http.StatusInternalServerError, `internal server error`, err)
+		return
+	}
+
 	httpJSON(w, model.AuthResponse{
 		Message: "auth valid",
-		Token:   "",
+		Token:   token,
 	})
 }
 
@@ -259,7 +262,7 @@ func GetAlgorithmHandler(w http.ResponseWriter, r *http.Request) {
 		httpError(w, http.StatusMethodNotAllowed, `method GET is expected`, nil)
 		return
 	}
-	httpJSON(w, model.GetAlgorithmResponse{Algorithm: algorithm})
+	httpJSON(w, model.GetAlgorithmResponse{Algorithm: "RS256"})
 }
 
 // VerifyHandler is a HTTP handler, which verifies given token

@@ -9,8 +9,11 @@ import (
 	"sort"
 	"testing"
 
+	"github.com/SermoDigital/jose/crypto"
+	"github.com/SermoDigital/jose/jws"
 	authapi "github.com/charakoba-com/auth-api"
 	"github.com/charakoba-com/auth-api/db"
+	"github.com/charakoba-com/auth-api/keymgr"
 	"github.com/charakoba-com/auth-api/model"
 	"github.com/charakoba-com/auth-api/service"
 )
@@ -345,6 +348,8 @@ func TestListupUserHandlerOK(t *testing.T) {
 }
 
 func TestAuthHandlerOK(t *testing.T) {
+	// testprepare
+	keymgr.Init("./test/jwtRS256.key", "./test/jwtRS256.key.pub")
 	// preparation
 	var usrSvc service.UserService
 	tx, err := db.BeginTx()
@@ -403,6 +408,30 @@ func TestAuthHandlerOK(t *testing.T) {
 	}
 	if authResponse.Message != `auth valid` {
 		t.Errorf(`"%s" != "auth valid"`, authResponse.Message)
+		return
+	}
+	token, err := jws.ParseJWT([]byte(authResponse.Token))
+	if err != nil {
+		t.Errorf("token parse error: %s", err)
+		return
+	}
+	publicKey, err := keymgr.PublicKey()
+	if err != nil {
+		t.Errorf("%s", err)
+		return
+	}
+	if err := token.Validate(publicKey, crypto.SigningMethodRS256); err != nil {
+		t.Errorf("token validation error: %s", err)
+		return
+	}
+	keymgr.Init("./test/jwtRS256.key", "./test/invalid.key.pub")
+	invalidPubKey, err := keymgr.PublicKey()
+	if err != nil {
+		t.Errorf("%s", err)
+		return
+	}
+	if err := token.Validate(invalidPubKey, crypto.SigningMethodRS256); err == nil {
+		t.Errorf("token validation should fail")
 		return
 	}
 }
