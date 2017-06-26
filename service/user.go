@@ -27,7 +27,6 @@ func (v *UserService) Lookup(tx *sql.Tx, id string) (*model.User, error) {
 	if err := mu.Load(tx, id); err != nil {
 		return nil, errors.Wrap(err, `loading model.User`)
 	}
-	log.Printf("DONE: service.User.Loopkup")
 	return &mu, nil
 }
 
