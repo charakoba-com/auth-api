@@ -7,7 +7,10 @@ import (
 	"encoding/pem"
 	"log"
 	"net/http"
+	"strings"
 
+	"github.com/SermoDigital/jose/crypto"
+	"github.com/SermoDigital/jose/jws"
 	"github.com/charakoba-com/auth-api/db"
 	"github.com/charakoba-com/auth-api/keymgr"
 	"github.com/charakoba-com/auth-api/model"
@@ -276,6 +279,30 @@ func VerifyHandler(w http.ResponseWriter, r *http.Request) {
 		httpError(w, http.StatusMethodNotAllowed, `method GET is expected`, nil)
 		return
 	}
+	authHeader := r.Header.Get("Authorization")
+	if authHeader == "" {
+		httpError(w, http.StatusBadRequest, `Authorization header is required`, nil)
+		return
+	}
+	if !strings.HasPrefix(authHeader, "Bearer ") {
+		httpError(w, http.StatusBadRequest, `Authorization: Bearer is required`, nil)
+		return
+	}
+	token, err := jws.ParseJWT([]byte(strings.Split(authHeader, " ")[1]))
+	if err != nil {
+		httpError(w, http.StatusBadRequest, `token is not valid`, nil)
+		return
+	}
+	publicKey, err := keymgr.PublicKey()
+	if err != nil {
+		httpError(w, http.StatusInternalServerError, `internal server error`, err)
+		return
+	}
+	if err := token.Validate(publicKey, crypto.SigningMethodRS256); err != nil {
+		httpJSON(w, model.VerifyResponse{Status: false})
+		return
+	}
+	httpJSON(w, model.VerifyResponse{Status: true})
 }
 
 // GetKeyHandler is a HTTP handler, which returns public key verifying token
