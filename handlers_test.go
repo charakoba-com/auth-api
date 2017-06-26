@@ -538,7 +538,7 @@ func TestVerifyHandlerOK(t *testing.T) {
 	}
 	var veres model.VerifyResponse
 	if err := json.NewDecoder(res.Body).Decode(&veres); err != nil {
-		t.Errof("%s", err)
+		t.Errorf("%s", err)
 		return
 	}
 	if !veres.Status {
