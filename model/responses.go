@@ -51,3 +51,8 @@ type GetAlgorithmResponse struct {
 type GetKeyResponse struct {
 	PublicKey string `json:"publickey"`
 }
+
+// VerifyResponse is a response type returned from VerifyHandler
+type VerifyResponse struct {
+	Status bool `json:"status"`
+}
