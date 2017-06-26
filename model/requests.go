@@ -14,9 +14,10 @@ type LookupUserRequest struct {
 
 // UpdateUserRequest represents a request for update upser
 type UpdateUserRequest struct {
-	ID       string `json:"id"`
-	Username string `json:"username"`
-	Password string `json:"password"`
+	ID          string `json:"id"`
+	Username    string `json:"username"`
+	OldPassword string `json:"old_password"`
+	NewPassword string `json:"new_password"`
 }
 
 // DeleteUserRequest represents a request for delete user

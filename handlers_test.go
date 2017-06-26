@@ -191,7 +191,8 @@ func TestUpdateUserHandlerOK(t *testing.T) {
 	updateUserRequest := model.UpdateUserRequest{
 		ID:       "updateID",
 		Username: "updateduser",
-		Password: "testpasswd",
+		OldPassword: "testpasswd",
+		NewPassword: "testpasswd",
 	}
 	// I/O test
 	requestBody := bytes.Buffer{}

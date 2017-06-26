@@ -139,7 +139,7 @@ func UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
 	updater := db.User{
 		ID:       updateUserRequest.ID,
 		Name:     updateUserRequest.Username,
-		Password: updateUserRequest.Password,
+		Password: updateUserRequest.NewPassword,
 	}
 
 	// main logic
@@ -149,6 +149,19 @@ func UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	usrSvc := service.UserService{}
+	u, err := usrSvc.Lookup(tx, updateUserRequest.ID)
+	if err != nil {
+		if errors.Cause(err) == sql.ErrNoRows {
+			httpError(w, http.StatusUnauthorized, `authorization failed`, nil)
+			return
+		}
+		httpError(w, http.StatusInternalServerError, `internal server error`, err)
+		return
+	}
+	if u.Password != utils.HashPassword(updateUserRequest.OldPassword, u.ID+u.Name) {
+		httpError(w, http.StatusUnauthorized, `authorization failed`, nil)
+		return
+	}
 	if err := usrSvc.Update(tx, &updater); err != nil {
 		httpError(w, http.StatusInternalServerError, `internal server error`, err)
 		return
