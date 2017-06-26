@@ -435,6 +435,7 @@ func TestAuthHandlerOK(t *testing.T) {
 		t.Errorf("token validation should fail")
 		return
 	}
+	keymgr.Init("./test/jwtRS256.key", "./test/jwtRS256.key.pub")
 }
 
 func TestAuthHandlerNotValid(t *testing.T) {
