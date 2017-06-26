@@ -193,13 +193,17 @@ func DeleteUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var usrSvc service.UserService
-	u, err := usrSvc.Lookup(tx, id)
+	u, err := usrSvc.Lookup(tx, request.ID)
 	if err != nil {
 		httpError(w, http.StatusUnauthorized, `authorization invalid`, nil)
 		return
 	}
 	if u.Password != utils.HashPassword(request.Password, u.ID+u.Name) {
 		httpError(w, http.StatusUnauthorized, `authorization invalid`, nil)
+		return
+	}
+	if request.ID != id && !u.IsAdmin {
+		httpError(w, http.StatusBadRequest, `no permission`, nil)
 		return
 	}
 	if err := usrSvc.Delete(tx, id); err != nil {
