@@ -502,6 +502,7 @@ func TestGetAlgorithmHandlerMethodNotAllowed(t *testing.T) {
 		t.Errorf("%s", err)
 		return
 	}
+	defer res.Body.Close()
 	// I/O test
 	if res.StatusCode != 405 {
 		t.Errorf("status 405 Method Not Allowed is expected, but %s", res.Status)
