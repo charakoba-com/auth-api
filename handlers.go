@@ -1,8 +1,10 @@
 package authapi
 
 import (
+	"crypto/x509"
 	"database/sql"
 	"encoding/json"
+	"encoding/pem"
 	"log"
 	"net/http"
 
@@ -275,6 +277,23 @@ func VerifyHandler(w http.ResponseWriter, r *http.Request) {
 func GetKeyHandler(w http.ResponseWriter, r *http.Request) {
 	// NotImplemented
 	log.Printf("GetKeyHandler")
+	publicKey, err := keymgr.PublicKey()
+	if err != nil {
+		httpError(w, http.StatusInternalServerError, `internal server error`, nil)
+		return
+	}
+	pub, err := x509.MarshalPKIXPublicKey(publicKey)
+	if err != nil {
+		httpError(w, http.StatusInternalServerError, `internal server error`, nil)
+		return
+	}
+	encoded := pem.EncodeToMemory(
+		&pem.Block{
+			Type:  "PUBLIC KEY",
+			Bytes: pub,
+		},
+	)
+	httpJSON(w, model.GetKeyResponse{PublicKey: string(encoded)})
 }
 
 // NotFoundHandler is a HTTP handler, which handles 404 Not Found

@@ -46,3 +46,8 @@ type AuthResponse struct {
 type GetAlgorithmResponse struct {
 	Algorithm string `json:"algorithm"`
 }
+
+// GetKeyResponse is a response type returned from GetKeyHandler
+type GetKeyResponse struct {
+	PublicKey string `json:"publickey"`
+}

@@ -508,5 +508,29 @@ func TestGetAlgorithmHandlerMethodNotAllowed(t *testing.T) {
 func VerifyHandlerOK(t *testing.T) {
 }
 
-func GetKeyHandlerOK(t *testing.T) {
+func TestGetKeyHandlerOK(t *testing.T) {
+	res, err := http.Get(ts.URL + "/key")
+	if err != nil {
+		t.Errorf("%s", err)
+		return
+	}
+	defer res.Body.Close()
+	var gkres model.GetKeyResponse
+	if err := json.NewDecoder(res.Body).Decode(&gkres); err != nil {
+		t.Errorf("%s", err)
+		return
+	}
+	pubkeyBytes, err := ioutil.ReadFile("./test/jwtRS256.key.pub")
+	if err != nil {
+		t.Errorf("%s", err)
+		return
+	}
+	expected := model.GetKeyResponse{
+		PublicKey: string(pubkeyBytes),
+	}
+	if gkres != expected {
+		t.Errorf(`"%s" != "%s"`, gkres, expected)
+		return
+	}
+
 }
