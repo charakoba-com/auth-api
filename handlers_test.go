@@ -189,8 +189,8 @@ func TestUpdateUserHandlerOK(t *testing.T) {
 	path := "/user"
 	t.Logf("PUT %s", path)
 	updateUserRequest := model.UpdateUserRequest{
-		ID:       "updateID",
-		Username: "updateduser",
+		ID:          "updateID",
+		Username:    "updateduser",
 		OldPassword: "testpasswd",
 		NewPassword: "testpasswd",
 	}
@@ -259,7 +259,16 @@ func TestUpdateUserHandlerOK(t *testing.T) {
 func TestDeleteUserHandlerOK(t *testing.T) {
 	path := "/user/deleteID"
 	t.Logf("DELETE %s", path)
-	req, err := http.NewRequest("DELETE", ts.URL+path, nil)
+	deleteUserRequest := model.DeleteUserRequest{
+		ID:       "deleteID",
+		Password: "testpasswd",
+	}
+	requestBody := bytes.Buffer{}
+	if err := json.NewEncoder(&requestBody).Encode(deleteUserRequest); err != nil {
+		t.Errorf("%s", err)
+		return
+	}
+	req, err := http.NewRequest("DELETE", ts.URL+path, &requestBody)
 	if err != nil {
 		t.Errorf("%s", err)
 		return

@@ -187,7 +187,21 @@ func DeleteUserHandler(w http.ResponseWriter, r *http.Request) {
 		httpError(w, http.StatusInternalServerError, `database error`, err)
 		return
 	}
+	var request model.DeleteUserRequest
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		httpError(w, http.StatusBadRequest, `invalid json request`, nil)
+		return
+	}
 	var usrSvc service.UserService
+	u, err := usrSvc.Lookup(tx, id)
+	if err != nil {
+		httpError(w, http.StatusUnauthorized, `authorization invalid`, nil)
+		return
+	}
+	if u.Password != utils.HashPassword(request.Password, u.ID+u.Name) {
+		httpError(w, http.StatusUnauthorized, `authorization invalid`, nil)
+		return
+	}
 	if err := usrSvc.Delete(tx, id); err != nil {
 		httpError(w, http.StatusInternalServerError, `deleting user`, err)
 		return

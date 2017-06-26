@@ -22,7 +22,8 @@ type UpdateUserRequest struct {
 
 // DeleteUserRequest represents a request for delete user
 type DeleteUserRequest struct {
-	ID string `json:"id"`
+	ID       string `json:"id"`
+	Password string `json:"password"`
 }
 
 // AuthRequest represents a request for authenticate user
