@@ -3,6 +3,7 @@ package authapi_test
 import (
 	"bytes"
 	"encoding/json"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -16,6 +17,7 @@ import (
 	"github.com/charakoba-com/auth-api/keymgr"
 	"github.com/charakoba-com/auth-api/model"
 	"github.com/charakoba-com/auth-api/service"
+	"github.com/charakoba-com/auth-api/utils"
 )
 
 var s *authapi.Server
@@ -511,7 +513,38 @@ func TestGetAlgorithmHandlerMethodNotAllowed(t *testing.T) {
 	}
 }
 
-func VerifyHandlerOK(t *testing.T) {
+func TestVerifyHandlerOK(t *testing.T) {
+	path := "/verify"
+	t.Logf("GET %s", path)
+	token, err := utils.GenerateToken("testuser", false)
+	if err != nil {
+		t.Errorf("%s", err)
+		return
+	}
+	req, err := http.NewRequest("GET", ts.URL+path, nil)
+	if err != nil {
+		t.Errorf("%s", err)
+		return
+	}
+	req.Header.Add("Authorization", "Bearer "+token)
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		t.Errorf("%s", err)
+		return
+	}
+	if res.StatusCode != 200 {
+		t.Errorf("status 200 OK is expected, but %s", res.Status)
+		return
+	}
+	var veres model.VerifyResponse
+	if err := json.NewDecoder(res.Body).Decode(&veres); err != nil {
+		t.Errof("%s", err)
+		return
+	}
+	if !veres.Status {
+		t.Errof("true is expected, but %s", veres.Status)
+		return
+	}
 }
 
 func TestGetKeyHandlerOK(t *testing.T) {
