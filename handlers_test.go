@@ -542,7 +542,7 @@ func TestVerifyHandlerOK(t *testing.T) {
 		return
 	}
 	if !veres.Status {
-		t.Errof("true is expected, but %s", veres.Status)
+		t.Errorf("true is expected, but %s", veres.Status)
 		return
 	}
 }
