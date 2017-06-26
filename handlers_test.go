@@ -384,6 +384,7 @@ func TestAuthHandlerOK(t *testing.T) {
 	}()
 
 	path := "/auth"
+	t.Logf("POST %s", path)
 	requestBody := bytes.Buffer{}
 	requestBody.WriteString(`{"id": "authID", "password": "testpasswd"}`)
 	req, err := http.NewRequest("POST", ts.URL+path, &requestBody)
@@ -438,6 +439,7 @@ func TestAuthHandlerOK(t *testing.T) {
 
 func TestAuthHandlerNotValid(t *testing.T) {
 	path := "/auth"
+	t.Logf("POST %s", path)
 	requestBody := bytes.Buffer{}
 	requestBody.WriteString(`{"id": "lookupID", "password": "hogepasswd"}`)
 	req, err := http.NewRequest("POST", ts.URL+path, &requestBody)
@@ -471,7 +473,7 @@ func TestGetAlgorithmHandlerOK(t *testing.T) {
 		ts.URL + "/alg",
 	}
 	for _, url := range urls {
-		t.Logf("%s", url)
+		t.Logf("GET %s", url)
 		res, err := http.Get(url)
 		if err != nil {
 			t.Errorf("%s", err)
@@ -493,6 +495,8 @@ func TestGetAlgorithmHandlerOK(t *testing.T) {
 
 func TestGetAlgorithmHandlerMethodNotAllowed(t *testing.T) {
 	requestBody := bytes.Buffer{}
+	path := "/algorithm"
+	t.Logf("GET %s", path)
 	res, err := http.Post(ts.URL, "", &requestBody)
 	if err != nil {
 		t.Errorf("%s", err)
