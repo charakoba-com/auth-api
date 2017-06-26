@@ -271,6 +271,11 @@ func GetAlgorithmHandler(w http.ResponseWriter, r *http.Request) {
 func VerifyHandler(w http.ResponseWriter, r *http.Request) {
 	// NotImplemented
 	log.Printf("VerifyHandler")
+	method := r.Method
+	if method != `GET` {
+		httpError(w, http.StatusMethodNotAllowed, `method GET is expected`, nil)
+		return
+	}
 }
 
 // GetKeyHandler is a HTTP handler, which returns public key verifying token
