@@ -20,7 +20,7 @@ func _main() int {
 	log := logger.New(os.Stdout, "", logger.InfoLevel)
 	var opts options
 	if _, err := flags.Parse(&opts); err != nil {
-		log.Errorf.Printf("%s", err)
+		log.Errorf("%s", err)
 		return 1
 	}
 	if err := authapi.Run(opts.Listen); err != nil {
