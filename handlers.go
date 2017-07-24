@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"encoding/pem"
 	"net/http"
-	"os"
 	"strings"
 
 	"github.com/SermoDigital/jose/crypto"
@@ -17,15 +16,11 @@ import (
 	"github.com/charakoba-com/auth-api/service"
 	"github.com/charakoba-com/auth-api/utils"
 	"github.com/gorilla/mux"
-	"github.com/nasa9084/go-logger"
 	"github.com/pkg/errors"
 )
 
-var log *logger.Logger
-
 func init() {
 	keymgr.Init("/etc/authapi/pki/rsa256.key", "/etc/authapi/pki/rsa256.key.pub")
-	log = logger.New(os.Stdout, "", logger.InfoLevel)
 }
 
 // HealthCheckHandler is a HTTP handler, which path is `/`
