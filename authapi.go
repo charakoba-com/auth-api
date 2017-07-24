@@ -1,15 +1,22 @@
 package authapi
 
 import (
-	"log"
 	"net/http"
+	"os"
 
 	"github.com/gorilla/mux"
+	"github.com/nasa9084/go-logger"
 )
 
 // Server represents an API server
 type Server struct {
 	*mux.Router
+}
+
+var log *logger.Logger
+
+func init() {
+	log = logger.New(os.Stdout, "", logger.InfoLevel)
 }
 
 // New returns a new Server
@@ -22,13 +29,13 @@ func New() *Server {
 // Run API Server
 func Run(listen string) error {
 	s := New()
-	log.Printf("Server listening on %s", listen)
+	log.Info("Server listening on %s", listen)
 
 	return http.ListenAndServe(listen, s.Router)
 }
 
 func (s *Server) setupRoutes() {
-	log.Printf("Initialize Routings...")
+	log.Info("Initialize Routings...")
 	r := s.Router
 
 	r.HandleFunc(`/`, HealthCheckHandler)

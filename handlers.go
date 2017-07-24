@@ -5,8 +5,8 @@ import (
 	"database/sql"
 	"encoding/json"
 	"encoding/pem"
-	"log"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/SermoDigital/jose/crypto"
@@ -17,16 +17,20 @@ import (
 	"github.com/charakoba-com/auth-api/service"
 	"github.com/charakoba-com/auth-api/utils"
 	"github.com/gorilla/mux"
+	"github.com/nasa9084/go-logger"
 	"github.com/pkg/errors"
 )
 
+var log *logger.Logger
+
 func init() {
 	keymgr.Init("/etc/authapi/pki/rsa256.key", "/etc/authapi/pki/rsa256.key.pub")
+	log = logger.New(os.Stdout, "", logger.InfoLevel)
 }
 
 // HealthCheckHandler is a HTTP handler, which path is `/`
 func HealthCheckHandler(w http.ResponseWriter, r *http.Request) {
-	log.Printf("HealthCheckHandler")
+	log.Debug("HealthCheckHandler")
 	method := r.Method
 	if method != `GET` {
 		httpError(w, http.StatusMethodNotAllowed, `method GET is expected`, nil)
@@ -39,7 +43,7 @@ func HealthCheckHandler(w http.ResponseWriter, r *http.Request) {
 
 // CreateUserHandler is a HTTP handler, which creates an new user
 func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
-	log.Printf("CreateUserHandler")
+	log.Debug("CreateUserHandler")
 
 	// Verify Request
 	method := r.Method
@@ -86,7 +90,7 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 
 // LookupUserHandler is a HTTP handler, which search an user by ID
 func LookupUserHandler(w http.ResponseWriter, r *http.Request) {
-	log.Printf("LookupUserHandler")
+	log.Debug("LookupUserHandler")
 
 	// Verify Request
 	method := r.Method
@@ -116,7 +120,7 @@ func LookupUserHandler(w http.ResponseWriter, r *http.Request) {
 
 // UpdateUserHandler is a HTTP handler, which updates an user
 func UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
-	log.Printf("UpdateUserHandler")
+	log.Debug("UpdateUserHandler")
 
 	// Verify Request
 	method := r.Method
@@ -130,7 +134,6 @@ func UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// preparation
 	var updateUserRequest model.UpdateUserRequest
 	if err := json.NewDecoder(r.Body).Decode(&updateUserRequest); err != nil {
 		httpError(w, http.StatusBadRequest, `invalid json request`, err)
@@ -175,7 +178,7 @@ func UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
 
 // DeleteUserHandler is a HTTP handler, which deletes an user
 func DeleteUserHandler(w http.ResponseWriter, r *http.Request) {
-	log.Printf("DeleteUserHandler")
+	log.Debug("DeleteUserHandler")
 	method := r.Method
 	if method != `DELETE` {
 		httpError(w, http.StatusMethodNotAllowed, `method DELETE is expected`, nil)
@@ -219,8 +222,7 @@ func DeleteUserHandler(w http.ResponseWriter, r *http.Request) {
 
 // ListupUserHandler is a HTTP handler, which returns all user list
 func ListupUserHandler(w http.ResponseWriter, r *http.Request) {
-	// NotImplemented
-	log.Printf("ListupUserHandler")
+	log.Debug("ListupUserHandler")
 	method := r.Method
 	if method != `GET` {
 		httpError(w, http.StatusMethodNotAllowed, `method GET is expected`, nil)
@@ -245,8 +247,7 @@ func ListupUserHandler(w http.ResponseWriter, r *http.Request) {
 
 // AuthHandler is a HTTP handler, which authes with username and password
 func AuthHandler(w http.ResponseWriter, r *http.Request) {
-	// NotImplemented
-	log.Printf("AuthHandler")
+	log.Debug("AuthHandler")
 
 	method := r.Method
 	if method != `POST` {
@@ -292,7 +293,7 @@ func AuthHandler(w http.ResponseWriter, r *http.Request) {
 
 // GetAlgorithmHandler is a HTTP handler, which returns system signature algorithm
 func GetAlgorithmHandler(w http.ResponseWriter, r *http.Request) {
-	log.Printf("GetAlgorithmHandler")
+	log.Debug("GetAlgorithmHandler")
 	method := r.Method
 	if method != `GET` {
 		httpError(w, http.StatusMethodNotAllowed, `method GET is expected`, nil)
@@ -303,8 +304,7 @@ func GetAlgorithmHandler(w http.ResponseWriter, r *http.Request) {
 
 // VerifyHandler is a HTTP handler, which verifies given token
 func VerifyHandler(w http.ResponseWriter, r *http.Request) {
-	// NotImplemented
-	log.Printf("VerifyHandler")
+	log.Debug("VerifyHandler")
 	method := r.Method
 	if method != `GET` {
 		httpError(w, http.StatusMethodNotAllowed, `method GET is expected`, nil)
@@ -338,8 +338,7 @@ func VerifyHandler(w http.ResponseWriter, r *http.Request) {
 
 // GetKeyHandler is a HTTP handler, which returns public key verifying token
 func GetKeyHandler(w http.ResponseWriter, r *http.Request) {
-	// NotImplemented
-	log.Printf("GetKeyHandler")
+	log.Debug("GetKeyHandler")
 	publicKey, err := keymgr.PublicKey()
 	if err != nil {
 		httpError(w, http.StatusInternalServerError, `internal server error`, nil)
@@ -361,6 +360,7 @@ func GetKeyHandler(w http.ResponseWriter, r *http.Request) {
 
 // NotFoundHandler is a HTTP handler, which handles 404 Not Found
 func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
-	log.Printf("NotFoundHandler")
+	log.Debug("NotFoundHandler")
+	log.Debug("path: %s", r.URL)
 	httpError(w, http.StatusNotFound, `not found`, nil)
 }
